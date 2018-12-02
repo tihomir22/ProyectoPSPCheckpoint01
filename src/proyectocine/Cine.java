@@ -10,13 +10,15 @@ public class Cine {
         //...
         // IMPLEMENTAR CODI ACÍ
         //...
-        Sales sales = new Sales();
-        Sessions sesiones = new Sessions();
+
         int opcio = 999, opcionElegida = 999, numSala, numFilas, numAsientosXFila;
         boolean es3d;
         Scanner teclado = new Scanner(System.in);
-        Sala salaActiva = new Sala();
+        Sales sales = new Sales();
+        Sessions sesiones = new Sessions();
 
+        Sala salaActiva = new Sala();
+        Sessio sesionActiva = new Sessio();
         do {
             opcio = menu();
 
@@ -69,29 +71,67 @@ public class Cine {
                     break;
 
                 case 4:	//Crear SESSIO
-                    System.out.println("Elige una sala para la sesion , introduce su indice");
-                    Sales.llistarSales();
-                    opcionElegida = teclado.nextInt();
-                    if (opcionElegida < Sales.quantitatSales()) {
-                        salaActiva = Sales.retornaSala(opcionElegida);
-                        System.out.println(salaActiva);
-                        Sessio sesion = new Sessio("sesion actual", Calendar.getInstance(),salaActiva,new BigDecimal(12));
-                        System.out.println(sesion.toString());
-                    }
-                    
+                    if (Sales.quantitatSales() > 0) {
+                        System.out.println("Elige una sala para la sesion , introduce su indice");
+                        Sales.llistarSales();
+                        opcionElegida = teclado.nextInt();
+                        if (opcionElegida < Sales.quantitatSales()) {
+                            salaActiva = Sales.retornaSala(opcionElegida);
+                            System.out.println(salaActiva);
+                            Sessio sesion = new Sessio("sesion actual", Calendar.getInstance(), salaActiva, new BigDecimal(12));
+                            sesion.setSeients(new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()]);
+                            Sessions.afegirSessio(sesion);
 
+                        }
+                    } else {
+                        System.out.println("Debes dar de alta alguna sala primero..");
+                    }
                     break;
 
                 case 5: //Modifica SESSIO
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...
+                    System.out.println("Elija una session a modificar");
+                    Sessions.llistarSessions();
+                    opcionElegida = teclado.nextInt();
+                    if (opcionElegida < Sessions.quantitatSessions() && opcionElegida >= 0) {
+                        sesionActiva = Sessions.retornaSessio(opcionElegida);
+                        if (sesionActiva != null) {
+                            System.out.println("Introduce los nuevos datos de la sesion nombre sesion - fecha DD/MM/AA/HH/MM  - sala  - precio");
+                            teclado.nextLine();
+                            String nombreSesion = teclado.nextLine();
+                            int dia = teclado.nextInt();
+                            int mes = teclado.nextInt();
+                            int año = teclado.nextInt();
+                            int hora = teclado.nextInt();
+                            int minutos = teclado.nextInt();
+                            System.out.println("Elige la nueva sala");
+                            Sales.llistarSales();
+                            salaActiva = Sales.retornaSala(teclado.nextInt());
+                            if (salaActiva != null) {
+                                System.out.println("Introduce precio");
+                                BigDecimal dec = new BigDecimal(teclado.nextInt());
+                                sesionActiva = new Sessio(nombreSesion, dia, mes, año, hora, minutos, salaActiva, dec);
+                                sesionActiva.setSeients(new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()]);
+                                System.out.println("Datos de la nueva sesion" + sesionActiva);
+                            } else {
+                                System.out.println("Introduciste una sala incorrecta");
+                            }
+                        } else {
+                            System.out.println("No se ha encontrado dicha session");
+                        }
+                    } else {
+                        System.out.println("Has introducido un numero incorrecto");
+                    }
                     break;
 
                 case 6: //Esborrar SESSSIO
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...
+                    System.out.println("Elija una session a eliminar");
+                    Sessions.llistarSessions();
+                    opcionElegida = teclado.nextInt();
+                    if (opcionElegida < Sessions.quantitatSessions() && opcionElegida >= 0) {
+                        Sessions.esborraSessio(opcionElegida);
+                    } else {
+                        System.out.println("Introduciste un dato incorrecto");
+                    }
                     break;
 
                 case 7: //Crear PELICULA
