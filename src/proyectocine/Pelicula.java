@@ -80,7 +80,7 @@ public class Pelicula {
     public int llistarSessionsPeli() {
         if (this.getSessionsPeli().size() > 0) {
             for (int i = 0; i < this.getSessionsPeli().size(); i++) {
-                System.out.println(this.getSessionsPeli().get(i));
+                System.out.println("[" + i + "] " + this.getSessionsPeli().get(i));
             }
             return 1;
         } else {

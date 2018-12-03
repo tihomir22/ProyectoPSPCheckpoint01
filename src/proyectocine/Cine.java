@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Cine {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //...
         // IMPLEMENTAR CODI ACÍ
         //...
@@ -18,9 +18,15 @@ public class Cine {
         Scanner teclado = new Scanner(System.in);
         Sales sales = new Sales();
         Sessions sesiones = new Sessions();
+        Pelicules pelicules = new Pelicules();
 
+        Pelicula peliActiva = new Pelicula();
         Sala salaActiva = new Sala();
         Sessio sesionActiva = new Sessio();
+
+        Pelicula peliculaPagament;
+        Sessio sesionPagament;
+        Seient asientoPagament;
         do {
             opcio = menu();
 
@@ -169,30 +175,102 @@ public class Cine {
                     System.out.println("Introduzca nombre del director");
                     teclado.nextLine();
                     director = teclado.nextLine();
+                    System.out.println("Introduzca nombre de los interpretes");
+                    interprete = teclado.nextLine();
+                    System.out.println("Introduzca argumento");
+                    arguments = teclado.nextLine();
+                    System.out.println("Introduzca genero");
+                    genere = teclado.nextLine();
+                    System.out.println("Introduzca clasificación");
+                    clasificacio = teclado.nextLine();
+                    Pelicula pelicula = new Pelicula(nombrePelicula, nacionalidad, duracionPelicula, director, interprete, arguments, genere, clasificacio);
+                    Pelicules.afegirPelicula(pelicula);
                     break;
 
                 case 8: //Modifica PELICULA
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...
+                    System.out.println("Elige pelicula a modificar");
+                    Pelicules.llistarPelicules();
+                    opcionElegida = teclado.nextInt();
+                    if (opcionElegida < Pelicules.quantitatPelicules() && opcionElegida >= 0) {
+                        peliActiva = Pelicules.retornaPelicula(opcionElegida);
+                        System.out.println("Seleccionada " + peliActiva.toString());
+                        teclado.nextLine();
+                        System.out.println("Introduzca nombre de pelicula");
+                        peliActiva.setNomPeli(teclado.nextLine());
+                        System.out.println("Introduzca nacionalidad");
+                        peliActiva.setNacionalitat(teclado.nextLine());
+                        System.out.println("Introduzca duracion pelicula");
+                        peliActiva.setDuracio(teclado.nextInt());
+                        teclado.nextLine();
+                        System.out.println("Introduzca nombre del director");
+                        peliActiva.setDirector(teclado.nextLine());
+                        System.out.println("Introduzca nombre de los interpretes");
+                        peliActiva.setInterprets(teclado.nextLine());
+                        System.out.println("Introduzca argumento");
+                        peliActiva.setArgument(teclado.nextLine());
+                        System.out.println("Introduzca genero");
+                        peliActiva.setGenere(teclado.nextLine());
+                        System.out.println("Introduzca clasificación");
+                        peliActiva.setClassificacio(teclado.nextLine());
+                        System.out.println("Nuevos datos... " + peliActiva.toString());
+                    } else {
+                        System.out.println("Has elegido una pelicula incorrecta");
+                    }
                     break;
 
                 case 9: //Esborrar PELICULA
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...
+                    System.out.println("Elige pelicula a eliminar");
+                    Pelicules.llistarPelicules();
+                    opcionElegida = teclado.nextInt();
+                    if (opcionElegida < Pelicules.quantitatPelicules() && opcionElegida >= 0) {
+                        Pelicules.esborraPelicula(opcionElegida);
+                        System.out.println("Pelicula eliminada con exito!");
+                    }
                     break;
 
                 case 10: //Associar PELICULA a SESSIO 
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...
+                    System.out.println("Elige una pelicula");
+                    Pelicules.llistarPelicules();
+                    opcionElegida = teclado.nextInt();
+                    if (opcionElegida < Pelicules.quantitatPelicules() && opcionElegida >= 0) {
+                        peliActiva = Pelicules.retornaPelicula(opcionElegida);
+                        System.out.println("Elige una sesion que quieres añadir ala pelicula" + peliActiva.toString());
+                        Sessions.llistarSessions();
+                        opcionElegida = teclado.nextInt();
+                        if (opcionElegida < Sessions.quantitatSessions() && opcionElegida >= 0) {
+                            sesionActiva = Sessions.retornaSessio(opcionElegida);
+                            System.out.println("Elegiste la sesion " + sesionActiva.toString() + " para la pelicula " + peliActiva.toString());
+                            Thread.sleep(1000);
+                            Pelicules.asociarPeliculaSesion(peliActiva, sesionActiva);
+                            System.out.println("Asignados con exito");
+                        }
+                    } else {
+                        System.out.println("Indice incorrecto");
+                    }
+
                     break;
 
                 case 11: //Comprar ENTRADA
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...			
+                    System.out.println("Selecciona una pelicula");
+                    Pelicules.llistarPelicules();
+                    opcionElegida = teclado.nextInt();
+                    if (opcionElegida < Pelicules.quantitatPelicules() && opcionElegida >= 0) {
+                        peliculaPagament = Pelicules.retornaPelicula(opcionElegida);
+                        System.out.println("Selecciona una sesion");
+                        peliculaPagament.llistarSessionsPeli();
+                        opcionElegida = teclado.nextInt();
+                        if (opcionElegida < peliculaPagament.getSessionsPeli().size() && opcionElegida >= 0) {
+                            sesionPagament = peliculaPagament.retornaSessioPeli(opcionElegida);
+                            System.out.println("Selecciona un asiento");
+                            sesionPagament.mapaSessio();
+                            System.out.println("Introduzca fila");
+                            int fila = teclado.nextInt();
+                            System.out.println("Introduzca columna");
+                            int col = teclado.nextInt();
+                            asientoPagament = sesionPagament.getSeients()[fila][col];
+                            System.out.println("Hemos llegado...");
+                        }
+                    }
                     break;
 
                 default:
@@ -209,9 +287,6 @@ public class Cine {
     //COMPRA INTERACTIVA D'UNA ENTRADA
     public static void compraEntradaPelicula() {
 
-        //...
-        // IMPLEMENTAR CODI ACÍ
-        //...
     }
 
     //*********************************************************
