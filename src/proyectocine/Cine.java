@@ -11,8 +11,10 @@ public class Cine {
         // IMPLEMENTAR CODI ACÍ
         //...
 
-        int opcio = 999, opcionElegida = 999, numSala, numFilas, numAsientosXFila;
+        int opcio = 999, opcionElegida = 999, numSala, numFilas, numAsientosXFila, dia, mes, año, hora, minutos, duracionPelicula;
+        String nombreSession, nombrePelicula, nacionalidad, director, interprete, arguments, genere, clasificacio;
         boolean es3d;
+        BigDecimal dec;
         Scanner teclado = new Scanner(System.in);
         Sales sales = new Sales();
         Sessions sesiones = new Sessions();
@@ -25,7 +27,15 @@ public class Cine {
             switch (opcio) {
 
                 case 1:
-                    Sala sal = new Sala(14, 10, 10);
+                    System.out.println("Introduzca numero de sala");
+                    numSala = teclado.nextInt();
+                    System.out.println("Es 3D ? true/false");
+                    es3d = teclado.nextBoolean();
+                    System.out.println("Introduce numero de filas");
+                    numFilas = teclado.nextInt();
+                    System.out.println("Introduzca tamaño de fila");
+                    numAsientosXFila = teclado.nextInt();
+                    Sala sal = new Sala(numSala, es3d, numFilas, numAsientosXFila);
                     System.out.println(sal.toString());
                     Sales.afegirSala(sal);
 
@@ -75,12 +85,26 @@ public class Cine {
                         System.out.println("Elige una sala para la sesion , introduce su indice");
                         Sales.llistarSales();
                         opcionElegida = teclado.nextInt();
-                        if (opcionElegida < Sales.quantitatSales()) {
+                        if (opcionElegida < Sales.quantitatSales() && opcionElegida >= 0) {
                             salaActiva = Sales.retornaSala(opcionElegida);
-                            System.out.println(salaActiva);
-                            Sessio sesion = new Sessio("sesion actual", Calendar.getInstance(), salaActiva, new BigDecimal(12));
-                            sesion.setSeients(new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()]);
+                            System.out.println("sala seleccionada" + salaActiva);
+                            System.out.println("Introduzca nombre de la sesion");
+                            teclado.nextLine();
+                            nombreSession = teclado.nextLine();
+                            System.out.println("Introduzca la fecha en el siguiente orden : dia mes año hora minutos (todo son integer)");
+                            dia = teclado.nextInt();
+                            mes = teclado.nextInt();
+                            año = teclado.nextInt();
+                            hora = teclado.nextInt();
+                            minutos = teclado.nextInt();
+                            System.out.println("Introduzca precio");
+                            dec = teclado.nextBigDecimal();
+                            Sessio sesion = new Sessio(nombreSession, dia, mes, año, hora, minutos, salaActiva, dec);
+                            Seient[][] asiento = new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()];
+                            sesion.setSeients(asiento);
                             Sessions.afegirSessio(sesion);
+                            sesion.setMapaSessio();
+                            sesion.mapaSessio();
 
                         }
                     } else {
@@ -98,17 +122,17 @@ public class Cine {
                             System.out.println("Introduce los nuevos datos de la sesion nombre sesion - fecha DD/MM/AA/HH/MM  - sala  - precio");
                             teclado.nextLine();
                             String nombreSesion = teclado.nextLine();
-                            int dia = teclado.nextInt();
-                            int mes = teclado.nextInt();
-                            int año = teclado.nextInt();
-                            int hora = teclado.nextInt();
-                            int minutos = teclado.nextInt();
+                            dia = teclado.nextInt();
+                            mes = teclado.nextInt();
+                            año = teclado.nextInt();
+                            hora = teclado.nextInt();
+                            minutos = teclado.nextInt();
                             System.out.println("Elige la nueva sala");
                             Sales.llistarSales();
                             salaActiva = Sales.retornaSala(teclado.nextInt());
                             if (salaActiva != null) {
                                 System.out.println("Introduce precio");
-                                BigDecimal dec = new BigDecimal(teclado.nextInt());
+                                dec = new BigDecimal(teclado.nextInt());
                                 sesionActiva = new Sessio(nombreSesion, dia, mes, año, hora, minutos, salaActiva, dec);
                                 sesionActiva.setSeients(new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()]);
                                 System.out.println("Datos de la nueva sesion" + sesionActiva);
@@ -135,9 +159,16 @@ public class Cine {
                     break;
 
                 case 7: //Crear PELICULA
-                    //...
-                    // IMPLEMENTAR CODI ACÍ
-                    //...
+                    System.out.println("Introduzca nombre de pelicula");
+                    teclado.nextLine();
+                    nombrePelicula = teclado.nextLine();
+                    System.out.println("Introduzca nacionalidad");
+                    nacionalidad = teclado.nextLine();
+                    System.out.println("Introduzca duracion pelicula");
+                    duracionPelicula = teclado.nextInt();
+                    System.out.println("Introduzca nombre del director");
+                    teclado.nextLine();
+                    director = teclado.nextLine();
                     break;
 
                 case 8: //Modifica PELICULA

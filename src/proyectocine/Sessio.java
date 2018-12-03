@@ -55,11 +55,31 @@ public class Sessio {
     }
 
     //*********************************************************
+    //ASIGNA DISTRIBUCIO DE SEIENTS A LA SALA
+    public void setMapaSessio() {
+        for (int i = 0; i < this.seients.length; i++) {
+            for (int j = 0; j < this.seients[0].length; j++) {
+                this.seients[i][j] = new Seient();
+                this.seients[i][j].setFilaSeient(i);
+                this.seients[i][j].setNumeroSeient(j);
+
+                //System.out.print(this.seients[i][j].iconaSeient() + " ");
+            }
+
+        }
+    }
+
+    //*********************************************************
     //MOSTRA DISTRIBUCIO DE SEIENTS A LA SALA
     public void mapaSessio() {
-        //...
-        // IMPLEMENTAR CODI ACÍ
-        //...
+        System.out.println("Mapa de la session " + this.getNomSessio());
+        for (int i = 0; i < this.seients.length; i++) {
+            for (int j = 0; j < this.seients[0].length; j++) {
+
+                System.out.print(this.seients[i][j].iconaSeient() + " ");
+            }
+            System.out.println("");
+        }
     }
 
     //*********************************************************

@@ -24,6 +24,10 @@ public class Seient {
         this.disponibilitat = Estat.LLIURE;
     }
 
+    public Seient() {
+        this.disponibilitat = Estat.LLIURE;
+    }
+
     //*********************************************************
     //metode TOSTRING
     @Override
