@@ -75,7 +75,6 @@ public class Sessio {
         System.out.println("Mapa de la session " + this.getNomSessio());
         for (int i = 0; i < this.seients.length; i++) {
             for (int j = 0; j < this.seients[0].length; j++) {
-
                 System.out.print(this.seients[i][j].iconaSeient() + " ");
             }
             System.out.println("");
