@@ -99,7 +99,22 @@ public class Pelicula {
 
     public void esborraSessioPeli(int i) {
         if (this.getSessionsPeli().get(i) != null) {
-            this.getSessionsPeli().remove(this.retornaSessioPeli(i));
+            Seient[][] asientos = this.getSessionsPeli().get(i).getSeients();
+            boolean hayReservados = false;
+            for (int j = 0; j < asientos.length; j++) {
+                for (int k = 0; k < asientos[0].length; k++) {
+                    if (asientos[j][k].getDisponibilitat() == Seient.Estat.OCUPAT) {
+                        hayReservados = true;
+                    }
+                }
+            }
+            if (hayReservados == false) {
+                this.getSessionsPeli().remove(this.retornaSessioPeli(i));
+                System.out.println("Eliminado con exito");
+            } else {
+                System.out.println("No se puede eliminar porque hay un asiento reservado");
+            }
+
         } else {
             System.out.println("No existe, por lo que no se puede borrar");
         }

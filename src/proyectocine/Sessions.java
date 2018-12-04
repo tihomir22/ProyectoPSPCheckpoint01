@@ -64,8 +64,21 @@ public class Sessions {
     //ESBORRA LA SESSIO DE LA POSICIO i
     public static void esborraSessio(int i) {
         if (sessions.get(i) != null) {
-            sessions.remove(i);
-            System.out.println("Eliminado con exito");
+            Seient[][] matrizAsiento = sessions.get(i).getSeients();
+            boolean hayReservados = false;
+            for (int j = 0; j < matrizAsiento.length; j++) {
+                for (int k = 0; k < matrizAsiento[0].length; k++) {
+                    if (matrizAsiento[j][k].getDisponibilitat() == Seient.Estat.OCUPAT) {
+                        hayReservados = true;
+                    }
+                }
+            }
+            if (hayReservados == false) {
+                sessions.remove(i);
+                System.out.println("Eliminado con exito");
+            } else {
+                System.out.println("No se puede eliminar porque hay un asiento reservado");
+            }
         } else {
             System.out.println("No se puede eliminar porque no existe");
         }
