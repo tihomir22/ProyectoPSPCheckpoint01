@@ -31,7 +31,7 @@ public class Sales {
     //MOSTRA EL LLISTAT DE SALES
     public static void llistarSales() {
         for (int i = 0; i < Sales.sales.size(); i++) {
-            System.out.println("[" + i + "]" + Sales.sales.get(i).toString());
+            System.out.println("[" + (i + 1) + "]" + Sales.sales.get(i).toString());
         }
     }
 
@@ -49,19 +49,19 @@ public class Sales {
     //*********************************************************
     //RETORNA LA SALA DE LA POSICIO i
     public static Sala retornaSala(int i) {
-        return Sales.sales.get(i);
+        return Sales.sales.get(i - 1);
     }
 
     //*********************************************************
     //MODIFICA LA SALA DE LA POSICIO i
     public static void modificaSala(Sala s, int i) {
-        Sales.sales.set(i, s);
+        Sales.sales.set(i - 1, s);
     }
 
     //*********************************************************
     //ESBORRA LA SALA DE LA POSICIO i
     public static void esborraSala(int i) {
-        Sales.sales.remove(i);
+        Sales.sales.remove(i - 1);
     }
 
     //*********************************************************

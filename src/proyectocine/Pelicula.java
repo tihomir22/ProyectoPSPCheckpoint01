@@ -80,7 +80,7 @@ public class Pelicula {
     public int llistarSessionsPeli() {
         if (this.getSessionsPeli().size() > 0) {
             for (int i = 0; i < this.getSessionsPeli().size(); i++) {
-                System.out.println("[" + i + "] " + this.getSessionsPeli().get(i));
+                System.out.println("[" + (i + 1) + "] " + this.getSessionsPeli().get(i));
             }
             return 1;
         } else {
@@ -89,6 +89,7 @@ public class Pelicula {
     }
 
     public Sessio retornaSessioPeli(int i) {
+        i = i - 1;
         if (this.getSessionsPeli().get(i) != null) {
             return this.getSessionsPeli().get(i);
         } else {
@@ -98,6 +99,7 @@ public class Pelicula {
     }
 
     public void esborraSessioPeli(int i) {
+        i = i - 1;
         if (this.getSessionsPeli().get(i) != null) {
             Seient[][] asientos = this.getSessionsPeli().get(i).getSeients();
             boolean hayReservados = false;

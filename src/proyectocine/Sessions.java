@@ -42,14 +42,14 @@ public class Sessions {
     //MOSTRA EL LLISTAT DE SESSIONS
     public static void llistarSessions() {
         for (int i = 0; i < sessions.size(); i++) {
-            System.out.println("[" + i + "] " + sessions.get(i).toString());
+            System.out.println("[" + (i + 1) + "] " + sessions.get(i).toString());
         }
     }
 
     //*********************************************************
     //RETORNA LA SESSIO DE LA POSICIO i
     public static Sessio retornaSessio(int i) {
-        return sessions.get(i);
+        return sessions.get(i - 1);
     }
 
     //*********************************************************
@@ -63,6 +63,7 @@ public class Sessions {
     //*********************************************************
     //ESBORRA LA SESSIO DE LA POSICIO i
     public static void esborraSessio(int i) {
+        i = i - 1;
         if (sessions.get(i) != null) {
             Seient[][] matrizAsiento = sessions.get(i).getSeients();
             boolean hayReservados = false;

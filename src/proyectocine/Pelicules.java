@@ -28,7 +28,7 @@ public class Pelicules {
     //VISUALITZA TOTES LES PELICULES DISPONIBLES
     public static int llistarPelicules() {
         for (int i = 0; i < Pelicules.pelicules.size(); i++) {
-            System.out.println("[" + i + "] " + Pelicules.pelicules.get(i).toString());
+            System.out.println("[" + (i + 1) + "] " + Pelicules.pelicules.get(i).toString());
         }
         return 0;
     }
@@ -36,7 +36,7 @@ public class Pelicules {
     //*********************************************************
     //RETORNA PELICULA DE LA POSICIO i
     public static Pelicula retornaPelicula(int i) {
-        return Pelicules.pelicules.get(i);
+        return Pelicules.pelicules.get(i - 1);
     }
 
     //*********************************************************
@@ -50,6 +50,7 @@ public class Pelicules {
     //*********************************************************
     //ESBORRA LA PELICULA DE LA POSICIO i
     public static void esborraPelicula(int i) {
+        i = i - 1;
         if (Pelicules.retornaPelicula(i) != null) {
             Pelicules.pelicules.remove(i);
         } else {
