@@ -1,2 +1,0 @@
-Seient
-Seient$Estat

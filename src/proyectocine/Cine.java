@@ -3,7 +3,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
-import proyectocine.ThreadCusstom;
 
 public class Cine {
 
@@ -147,10 +146,20 @@ public class Cine {
 
                 case 11: //Comprar ENTRADA
                     System.out.println("Hilo Comprando ENTRADA...");
-                    Cine.compraEntradaPelicula();
+                    int ale1=(int) (Math.round(Math.random()*(Pelicules.quantitatPelicules()-1)));
+                    ale1++;
+                    Pelicula peliThread=Pelicules.retornaPelicula(ale1);
+                    System.out.println(peliThread.toString());
+                    
+                    int ale2=(int)(Math.round(Math.random()*peliThread.getSessionsPeli().size()-1));
+                    ale2++;
+                  
+                    
                     System.out.println("\n\n");
 
                     break;
+                   
+                   
                 //********
                 //********
 
@@ -163,9 +172,7 @@ public class Cine {
 
     }
 
-    public void run() {
-        System.out.println("Dembow");
-    }
+
 
     //*********************************************************
     //COMPRA INTERACTIVA D'UNA ENTRADA
@@ -202,6 +209,8 @@ public class Cine {
         sa = se.getSala();
         se.mapaSessio();
         Seient[][] seients = se.getSeients();
+        ArrayList<Seient>listaAsientosTemporal=new ArrayList<>();
+        
         int numeroAsientos = Validacio.validaSencer("Introduzca numero de entradas", (seients.length * seients[0].length));
         int i = 0;
         while (i < numeroAsientos) {
@@ -210,16 +219,36 @@ public class Cine {
 
             if (seients[fila - 1][seient - 1].verificaSeient()) { //Si SEIENT lliure -> reserva SEIENT
                 //pagament entrada
-                pagamentEntrada(se.getPreu());
-                seients[fila - 1][seient - 1].ocupaSeient();
-                System.out.println("Seient reservat");
-                se.imprimirTicket(seients[fila - 1][seient - 1], se, sa, p);
+                //pagamentEntrada(se.getPreu());
+                //seients[fila - 1][seient - 1].ocupaSeient();
+            	seients[fila - 1][seient - 1].reservantSeient();
+            	listaAsientosTemporal.add(seients[fila-1][seient-1]);
+                System.out.println("Seient reservat" + listaAsientosTemporal.get(listaAsientosTemporal.size()-1).toString());
+                //se.imprimirTicket(seients[fila - 1][seient - 1], se, sa, p);
             } else { //NO Reserva
                 System.out.println("\t ERROR Cine:compraEntradaPelicula: No sha pogut fer reserva Seient");
+                aliberar_a_los_perros(listaAsientosTemporal,seients);
+                return;
             };
             se.mapaSessio();
+            i++;
         }
-
+        if(pagamentEntrada(new BigDecimal(listaAsientosTemporal.size()).multiply(se.getPreu()))) {
+	        for(int j=0;j<listaAsientosTemporal.size();j++) { // Una vez pagada la entrada, se disponen a ocupar los asientos en si y a imprimir los tickets
+	        	seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()].ocupaSeient();
+	        	se.imprimirTicket(seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()], se, sa, p);
+	        }
+        }else {
+        	aliberar_a_los_perros(listaAsientosTemporal,seients);
+        }
+    }
+    
+    public static void aliberar_a_los_perros(ArrayList<Seient>listaAsientosOcupados,Seient[][]seients) {
+    	for(int i=0;i<listaAsientosOcupados.size();i++) {
+    		seients[listaAsientosOcupados.get(i).getFilaSeient()][listaAsientosOcupados.get(i).getNumeroSeient()].alliberaSeient();
+    	}
+    	System.out.print("Aliberados con exito " + listaAsientosOcupados.size()+ " asientos");
+    	
     }
 
     //---------------------
