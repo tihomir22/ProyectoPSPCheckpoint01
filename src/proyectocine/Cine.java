@@ -1,304 +1,377 @@
-package proyectocine;
-
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 
+
 public class Cine {
 
-    public static Pelicula peliculaPagament;
-    public static Sessio sesionPagament;
-    public static Seient asientoPagament;
+	public static void main(String[] args) throws InterruptedException {
+		int opcio=-1;
+		Scanner s = new Scanner(System.in);
+		// TODO Auto-generated method stub
+		String nsala, nsessio, npelicula;
+		int sala, sessio, pelicula; 
 
-    public static void main(String[] args) throws InterruptedException {
-        //...
-        // IMPLEMENTAR CODI ACÍ
-        //...
+		Sales sales = new Sales();
+		Sessions sessions = new Sessions();
+		Pelicules pelicules = new Pelicules();
 
-        int opcio = 999, opcionElegida = 999, numSala, numFilas, numAsientosXFila, dia, mes, año, hora, minutos, duracionPelicula;
-        String nombreSession, nombrePelicula, nacionalidad, director, interprete, arguments, genere, clasificacio;
-        Calendar calendario;
-        boolean es3d;
-        BigDecimal dec;
-        Scanner teclado = new Scanner(System.in);
-        Sales sales = new Sales();
-        Sessions sesiones = new Sessions();
-        Pelicules pelicules = new Pelicules();
+		//carregaDades Inicials
+		carregaDadesInicials();
 
-        Pelicula peliActiva = new Pelicula();
-        Sala salaActiva = new Sala();
-        Sessio sesionActiva = new Sessio();
+		do{
+			opcio = menu();
 
-        do {
-            opcio = menu();
+			switch(opcio){
 
-            switch (opcio) {
+			case 1: //Crear SALA
+				System.out.println("Creant SALA...");
+				Sala sa = new Sala();
+				System.out.println(sa);
+				Sales.afegirSala(sa);
+				System.out.println("\n\n");
+				break;
+				//********
 
-                case 1:
-                    numSala = Validacio.validaSencer(" Introduzca numero de sala", 1000);
-                    es3d = Validacio.validaBoolea(" Es 3D? S/N");
-                    numFilas = Validacio.validaSencer("Introduce numero de filas", 1000);
-                    numAsientosXFila = Validacio.validaSencer("Introduzca tamaño de fila", 1000);
-                    Sala sal = new Sala(numSala, es3d, numFilas, numAsientosXFila);
-                    System.out.println(sal.toString());
-                    Sales.afegirSala(sal);
+			case 2: //Modificar SALA
+				System.out.println("Modificant SALA...");
+				if(Sales.quantitatSales()==0) //NO hi ha sales
+					System.out.println("ERROR Modifica SALA: No hi ha Sales a modificar");
+				else{ //Hi ha sales creades
+					Sales.llistarSales();
+					sala = Validacio.validaSencer("\t Tria SALA a modificar:",Sales.quantitatSales());
+					Sales.modificaSala(sala);
+				}
+				System.out.println("\n\n");
+				break;
+				//********
 
-                    break;
+			case 3: //Esborrar SALA
+				System.out.println("Esborrant SALA...");
+				if(Sales.quantitatSales()==0) //NO hi ha sales
+					System.out.println("ERROR Esborra SALA: No hi ha Sales a esborrar");
+				else{ //Hi ha sales creades
+					Sales.llistarSales();
+					sala = Validacio.validaSencer("\t Tria SALA a esborrar:",Sales.quantitatSales());
+					Sales.esborraSala(sala);
+				}
+				System.out.println("\n\n");
+				break;
+				//********
 
-                case 2:
-                    Sales.llistarSales();
-                    opcionElegida = Validacio.validaSencer("Elige una sala a modificar , introduce su indice", Sales.quantitatSales());
-                    Sala s = Sales.retornaSala(opcionElegida);
-                    System.out.println("Introduce nuevos datos en el siguiente orden : NUMERO SALA - NUMERO FILAS - CANTIDAD DE ASIENTOS POR FILA - ES 3D (False o True)");
-                    numSala = teclado.nextInt();
-                    if (Sales.validaIdSala(numSala) == false) {
-                        numFilas = teclado.nextInt();
-                        numAsientosXFila = teclado.nextInt();
-                        es3d = teclado.nextBoolean();
-                        s.setNumeroSala(numSala);
-                        s.setFiles(numFilas);
-                        s.setTamanyFila(numAsientosXFila);
-                        s.setSala3D(es3d);
-                        Sales.modificaSala(s, opcionElegida);
-                        System.out.println("Modificada con exito" + s.toString());
-                    } else {
-                        System.out.println("Ya existe una sala con ese numero de sala");
-                    }
+			case 4: //Crear SESSIO
+				System.out.println("Creant SESSIO...");
+				Sessio se = new Sessio();
+				System.out.println(se);
+				Sessions.afegirSessio(se);
+				System.out.println("\n\n");
+				break;
+				//********
 
-                    break;
+			case 5: //Modifica SESSIO
+				System.out.println("Modificant SESSIO...");
 
-                case 3: //Esborrar SALA
-                    if (Sales.quantitatSales() > 0) {
-                        Sales.llistarSales();
-                        opcionElegida = Validacio.validaSencer("Elige una sala a borrar , introduce su indice", Sales.quantitatSales());
-                        Sales.esborraSala(opcionElegida);
-                        System.out.println("Eliminado con exito");
-                    } else {
-                        System.out.println("No hay salas");
-                    }
-                    break;
+				if(Sessions.quantitatSessions()==0) //NO hi ha sessions
+					System.out.println("ERROR Modifica SESSIO: No hi ha Sessions a modificar");
+				else{ //Hi ha sessions creades
+					Sessions.llistarSessions();
+					sessio = Validacio.validaSencer("\t Tria SESSIO a modificar:",Sessions.quantitatSessions());
+					sessions.modificaSessio(sessio);
+				}
+				System.out.println("\n\n");
+				break;
+				//********
 
-                case 4:	//Crear SESSIO
-                    if (Sales.quantitatSales() > 0) {
-                        Sales.llistarSales();
-                        opcionElegida = Validacio.validaSencer("Elige una sala para la sesion, introduce su indice", Sales.quantitatSales());
-                        salaActiva = Sales.retornaSala(opcionElegida);
-                        System.out.println("sala seleccionada" + salaActiva);
-                        nombreSession = Validacio.validaCadena("Introduzca nombre de la sesion");
-                        calendario = Validacio.validaData("Introduzca la fecha con el siguiente formato DD/MM/AAAA");
-                        dec = Validacio.validaMoneda("Introduzca precio");
-                        Sessio sesion = new Sessio(nombreSession, calendario, salaActiva, dec);
-                        Seient[][] asiento = new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()];
-                        sesion.setSeients(asiento);
-                        Sessions.afegirSessio(sesion);
-                        sesion.setMapaSessio();
-                        sesion.mapaSessio();
-                        System.out.println("Deseas añadir salas a la sesion? [S] [N]");
-                        String eleccion = teclado.nextLine();
-                        if (eleccion.equalsIgnoreCase("S") && Sales.quantitatSales() > 0) {
-                            Sales.llistarSales();
-                            opcionElegida = Validacio.validaSencer("Elija una sala a para añadir a la sesion", Sales.quantitatSales());
-                            sesion.setSala(Sales.retornaSala(opcionElegida));
-                            System.out.println("Añadida con exito");
-                        } else {
-                            System.out.println("No hay salas ");
-                        }
+			case 6: //Esborrar SESSSIO
+				System.out.println("Esborrant SESSIO...");
+				if(Sessions.quantitatSessions()==0) //NO hi ha sessions
+					System.out.println("ERROR Esborra SESSIO: No hi ha Sessions a modificar");
+				else{ //Hi ha sessions creades
+					Sessions.llistarSessions();
+					sessio = Validacio.validaSencer("\t Tria SESSIO a esborrar:",Sessions.quantitatSessions());
+					sessions.esborraSessio(sessio);
+				}
+				System.out.println("\n\n");
+				break;
+				//********
 
-                    } else {
-                        System.out.println("Debes dar de alta alguna sala primero..");
-                    }
-                    break;
+			case 7: //Crear PELICULA
+				System.out.println("Creant PELICULA...");
+				Pelicula p = new Pelicula();
+				System.out.println(p);
+				Pelicules.afegirPelicula(p);
+				System.out.println("\n\n");
+				break;
+				//********
 
-                case 5: //Modifica SESSIO
+			case 8: //Modifica PELICULA
+				System.out.println("Modificant PELICULA...");
 
-                    Sessions.llistarSessions();
-                    opcionElegida = Validacio.validaSencer("Elija una sesion a modificar", Sessions.quantitatSessions());
-                    sesionActiva = Sessions.retornaSessio(opcionElegida);
-                    String nombreSesion = Validacio.validaCadena("Introduzca nombre de la sesion");
-                    calendario = Validacio.validaData("Introduzca la fecha con el siguiente formato DD/MM/AAAA");
-                    Sales.llistarSales();
-                    salaActiva = Sales.retornaSala(Validacio.validaSencer("Elige la nueva sala", Sales.quantitatSales()));
-                    if (salaActiva != null) {
-                        dec = Validacio.validaMoneda("Introduce precio");
-                        sesionActiva = new Sessio(nombreSesion, calendario, salaActiva, dec);
-                        sesionActiva.setSeients(new Seient[salaActiva.getFiles()][salaActiva.getTamanyFila()]);
-                        System.out.println("Datos de la nueva sesion" + sesionActiva);
-                    } else {
-                        System.out.println("Introduciste una sala incorrecta");
-                    }
+				if( Pelicules.quantitatPelicules()==0) //NO hi ha pelicules
+					System.out.println("ERROR Modifica PELICULA: No hi ha Pelicules a modificar");
+				else{ //Hi ha pelicules creades
+					Pelicules.llistarPelicules();
+					pelicula = Validacio.validaSencer("\t Tria PELICULA a modificar:", Pelicules.quantitatPelicules());
+					Pelicules.modificaPelicula(pelicula);
+				}
+				System.out.println("\n\n");
+				break;
+				//********
 
-                    break;
+			case 9: //Esborrar PELICULA
+				System.out.println("Esborrant PELICULA...");
+				if( Pelicules.quantitatPelicules()==0) //NO hi ha pelicules
+					System.out.println("ERROR Esborra PELICULA: No hi ha pelicules a esborrar");
+				else{ //Hi ha pelicules creades
+					Pelicules.llistarPelicules();
+					pelicula = Validacio.validaSencer("\t Tria PELICULA a esborrar:", Pelicules.quantitatPelicules());
+					Pelicules.esborraPelicula(pelicula);
+				}
+				System.out.println("\n\n");
+				break;
+				//********
 
-                case 6: //Esborrar SESSSIO
-                    if (Sessions.quantitatSessions() > 0) {
-                        Sessions.llistarSessions();
-                        opcionElegida = Validacio.validaSencer("Elija una sesion a eliminar", Sessions.quantitatSessions());
-                        Sessions.esborraSessio(opcionElegida);
-                    } else {
-                        System.out.println("No hay sesiones");
-                    }
-                    break;
+			case 10: //Associar PELICULA a SESSIO 
+				System.out.println("Associant PELICULA a SESSIO...");
+				associaPeliculaSessio(pelicules, sessions);
+				System.out.println("\n\n");
+				break;
 
-                case 7: //Crear PELICULA
-                    nombrePelicula = Validacio.validaCadena("Introduzca nombre de la pelicula");
-                    nacionalidad = Validacio.validaCadena("Introduzca nacionalidad");
-                    duracionPelicula = Validacio.validaSencer("Introduzca duracion pelicula en minutos", 1000);
-                    director = Validacio.validaCadena("Introduzca nombre del director");
-                    interprete = Validacio.validaCadena("Introduzca nombre de los interpretes");
-                    arguments = Validacio.validaCadena("Introduzca argumento");
-                    genere = Validacio.validaCadena("Introduzca genero");
-                    clasificacio = Validacio.validaCadena("Introduzca clasificacion");
-                    Pelicula pelicula = new Pelicula(nombrePelicula, nacionalidad, duracionPelicula, director, interprete, arguments, genere, clasificacio);
-                    Pelicules.afegirPelicula(pelicula);
-                    System.out.println("Deseas añadir sesiones a la pelicula? [S] [N]");
-                    String eleccion = teclado.nextLine();
-                    if (eleccion.equalsIgnoreCase("S")) {
-                        Sessions.llistarSessions();
-                        opcionElegida = Validacio.validaSencer("Elija una session para añadir a la pelicula", Sessions.quantitatSessions());
-                        pelicula.getSessionsPeli().add(Sessions.retornaSessio(opcionElegida));
-                        System.out.println("Añadida con exito");
+			case 11: //Comprar ENTRADA
+				System.out.println("Comprant ENTRADA...");
+				compraEntradaPelicula();
+				System.out.println("\n\n");
+				break;
+				//********
 
-                    }
-                    break;
 
-                case 8: //Modifica PELICULA
-                    Pelicules.llistarPelicules();
-                    opcionElegida = Validacio.validaSencer("Elige pelicula a modificar", Pelicules.quantitatPelicules());
-                    peliActiva = Pelicules.retornaPelicula(opcionElegida);
-                    System.out.println("Seleccionada " + peliActiva.toString());
-                    peliActiva.setNomPeli(Validacio.validaCadena("Introduzca nombre de la pelicula"));
-                    peliActiva.setNacionalitat(Validacio.validaCadena("Introduzca nacionalidad"));
-                    peliActiva.setDuracio(Validacio.validaSencer("Introduzca duracion pelicula", 1000));
-                    peliActiva.setDirector(Validacio.validaCadena("Introduzca nombre del director"));
-                    peliActiva.setInterprets("Introduzca nombre de los interpretes");
-                    peliActiva.setArgument(Validacio.validaCadena("Introduzca argumento"));
-                    peliActiva.setGenere(Validacio.validaCadena("Introduzca generoº"));
-                    peliActiva.setClassificacio(Validacio.validaCadena("Introduzca clasificacion"));
-                    System.out.println("Nuevos datos... " + peliActiva.toString());
-                    break;
+			default: System.out.println("Eixint CINE...\n Programa finalitzat!!!");
+			System.out.println("\n\n");
 
-                case 9: //Esborrar PELICULA
-                    Pelicules.llistarPelicules();
-                    opcionElegida = Validacio.validaSencer("Elige pelicula a eliminar", Pelicules.quantitatPelicules());
-                    Pelicules.esborraPelicula(opcionElegida);
-                    System.out.println("Pelicula eliminada con exito!");
+			}
+		}while(opcio!=0);
 
-                    break;
+	}
 
-                case 10: //Associar PELICULA a SESSIO 
-                    Pelicules.llistarPelicules();
-                    opcionElegida = Validacio.validaSencer("Elige una pelicula", Pelicules.quantitatPelicules());
-                    peliActiva = Pelicules.retornaPelicula(opcionElegida);
-                    System.out.println("Elige una sesion que quieres añadir ala pelicula" + peliActiva.toString());
-                    Sessions.llistarSessions();
-                    opcionElegida = Validacio.validaSencer("Elige una sesion", Sessions.quantitatSessions());
-                    sesionActiva = Sessions.retornaSessio(opcionElegida);
-                    System.out.println("Elegiste la sesion " + sesionActiva.toString() + " para la pelicula " + peliActiva.toString());
-                    Thread.sleep(1000);
-                    Pelicules.asociarPeliculaSesion(peliActiva, sesionActiva);
-                    System.out.println("Asignados con exito");
+	//*********************************************************
+	//COMPRA INTERACTIVA D'UNA ENTRADA
+	public static void compraEntradaPelicula() throws InterruptedException{
 
-                    break;
+		Pelicula p = null;
+		Sala sa = null;
+		Sessio se = null;
+		//		String nsala, nsessio, npelicula, nfila, nseient;
+		//		int sala, 
+		int sessio, pelicula, fila, seient, numEntrades; 
 
-                case 11: //Comprar ENTRADA
-                    Pelicules.llistarPelicules();
-                    opcionElegida = Validacio.validaSencer("Selecciona una pelicula", Pelicules.quantitatPelicules());
-                    peliculaPagament = Pelicules.retornaPelicula(opcionElegida);
-                    peliculaPagament.llistarSessionsPeli();
-                    opcionElegida = Validacio.validaSencer("Selecciona una sesion", Sessions.quantitatSessions());
-                    sesionPagament = peliculaPagament.retornaSessioPeli(opcionElegida);
-                    System.out.println("Selecciona un asiento");
-                    sesionPagament.mapaSessio();
-                    int fila = Validacio.validaSencer("Introduzca fila", sesionPagament.getSala().getFiles());
-                    int col = Validacio.validaSencer("Introduzca columna", sesionPagament.getSala().getTamanyFila());
-                    asientoPagament = sesionPagament.getSeients()[fila][col];
-                    System.out.println(asientoPagament.toString());
-                    compraEntradaPelicula();
-                    System.out.println("La información es correcta? [S] [N]");
-                    String aux = teclado.nextLine();
-                    if (aux.equalsIgnoreCase("S")) {
-                        compraEntradaPelicula();
-                        System.out.println("Introduzca metodo de pago");
-                        String metodo = teclado.nextLine();
-                        System.out.println("Introduzca datos tarjeta");
-                        String datosTarjeta = teclado.nextLine();
-                        pagamentEntrada(sesionPagament.getPreu(), metodo, datosTarjeta);
+		//Si NO hi ha PELICULES, s'ix del procés de compra
+		if (Pelicules.llistarPelicules() == 0) {
+			System.out.println("\t ERROR Cine:compraEntradaPelicula: No hi ha PELICULES");
+			return;
+		}
+		//Selecció de PELICULA
+		pelicula = Validacio.validaSencer("\t Tria PELICULA:",Pelicules.quantitatPelicules());
+		p = Pelicules.retornaPelicula(pelicula);
+		System.out.println(p);
+		System.out.println();
+		System.out.println();
 
-                    } else if (aux.equalsIgnoreCase("N")) {
-                        System.out.println("Saliendo...");
-                        break;
-                    } else {
-                        System.out.println("Has introducido un valor incorrecto");
-                    }
+		//Si NO hi ha SESSIONS per la PELICULA, s'ix del procés de compra
+		if (p.llistarSessionsPeli()== 0) {
+			System.out.println("\t ERROR Cine:compraEntradaPelicula: No hi ha SESSIONS per a esta PELICULA");
+			return;
+		}
+		//Selecció de la SESSIO
+		sessio = Validacio.validaSencer("\t Tria la sessió per a "+p.getNomPeli()+":",p.getSessionsPeli().size());
 
-                    break;
-                default:
-            }
+		se = p.retornaSessioPeli(sessio);
+		sa = se.getSala();
+		se.mapaSessio();
+		Seient[][] seients = se.getSeients();
 
-        } while (opcio
-                != 0);
+		fila = Validacio.validaSencer("\tTria FILA: [1-"+sa.getFiles()+"] ",sa.getFiles());
+		seient = Validacio.validaSencer("\t Tria SEIENT en la fila: [1-"+sa.getTamanyFila()+"]",sa.getTamanyFila());
 
-    } //*********************************************************
-    //COMPRA INTERACTIVA D'UNA ENTRADA
+		if (seients[fila-1][seient-1].verificaSeient()){ //Si SEIENT lliure -> reserva SEIENT
+			//pagament entrada
+			pagamentEntrada(se.getPreu());
+			seients[fila-1][seient-1].ocupaSeient();
+			System.out.println("Seient reservat");
+			se.imprimirTicket(seients[fila-1][seient-1],se, sa, p);
+		}else{ //NO Reserva
+			System.out.println("\t ERROR Cine:compraEntradaPelicula: No sha pogut fer reserva Seient");
+		};
 
-    public static void compraEntradaPelicula() throws InterruptedException {
+		se.mapaSessio();
+	}
 
-        System.out.println("Se va a comprar el asiento " + asientoPagament.toString() + " que se encuentra en ");
-        Thread.sleep(1000);
-        System.out.println("Sesion " + sesionPagament.toString() + " que a su vez tiene la siguiente pelicula ");
-        Thread.sleep(1000);
-        System.out.println("Pelicula " + peliculaPagament.toString());
-        Thread.sleep(1000);
-    }
+	//---------------------
+	//metode que tracta de reservar totes les entrades sol·licitades, 
+	// retorna TRUE  -> si es reserven TOTES les entrades
+	// retorna FALSE -> si NO s'ha pogut reservar alguna entrada, aleshores no es reservarà CAP
+	public static void reserva_numEntrades(Pelicula p, Sessio se, Sala sa, int numEntrades) throws InterruptedException{
+		boolean isReservat = true;
+		int fila, seient;
+		//ArrayList de la quantitat de seients que es volen comprar
+		ArrayList<Seient> seientsAcomprar = new ArrayList<Seient>();
 
-    //*********************************************************
-    //PAGAMENT D'UNA ENTRADA
-    static boolean pagamentEntrada(BigDecimal preu, String metodoPago, String datosTarjeta) throws InterruptedException {
-        System.out.println("Total a pagar " + preu + " €");
-        System.out.println("Metodo de pago " + metodoPago);
-        System.out.println("Datos de la tarjeta " + datosTarjeta);
-        int i = 0;
-        while (i < 5) {
-            System.out.println("Procesando pago...");
-            Thread.sleep(1000);
-            i++;
-        }
-        System.out.println("Pago realizado con exito");
-        asientoPagament.reservaSeient();
-        sesionPagament.mapaSessio();
-        return false;
-    }
+		for (int i=0; i < numEntrades; i++){
+			System.out.println("\tSeient "+(i+1)+" :");
+			fila = Validacio.validaSencer("\t\t Tria FILA: [1-"+sa.getFiles()+"] ",sa.getFiles());
+			seient = Validacio.validaSencer("\t\t Tria SEIENT en la fila: [1-"+sa.getTamanyFila()+"]",sa.getTamanyFila());		
+			Seient[][] seients = se.getSeients();
+			if (seients[fila-1][seient-1].verificaSeient()){ //Reserva SEIENT
+				seients[fila-1][seient-1].reservantSeient();	
+				seientsAcomprar.add(seients[fila-1][seient-1]);//afegeix seient a llista SEIENTS RESERVATS
+			}else{ //NO Reserva
+				System.out.println("\t ERROR Cine:validaSeient: Seient reservat/ocupat");
+				isReservat = false;
+			};
+		}//endfor
 
-    //*********************************************************
-    //VISUALITZA EL MENU PRINCIPAL
-    public static int menu() {
-        int opcio;
-        Scanner s = new Scanner(System.in);
+		if (isReservat){ //Compra seients
+			System.out.println("\nSEIENT RESERVATS: "+seientsAcomprar.size());
+			pagamentEntrada(new BigDecimal(numEntrades).multiply(se.getPreu()));
+			for (int i=0; i < seientsAcomprar.size(); i++){
+				Seient s = seientsAcomprar.get(i);
+				s.ocupaSeient(); 		//ocupa seient
+				se.imprimirTicket(s,se, sa, p);
+				System.out.println();
+			}//for
+		}else{// Llibera seients
+			System.out.println("\t\tNO sha pogut fer la compra de "+numEntrades+" entrades. Es queden Lliures");
+			for (int i=0; i < seientsAcomprar.size(); i++){
+				Seient s = seientsAcomprar.get(i);
+				s.alliberaSeient(); 		//ocupa seient
+			}//for
+		}
+		for (int i=seientsAcomprar.size(); i > 0; i--)
+			seientsAcomprar.remove(i-1); //elimina seient de la llista
 
-        do {
-            System.out.println("MENU Aplicació CINE:");
-            System.out.println("====================");
-            System.out.println("1.  Crear SALA");
-            System.out.println("2.  Modificar SALA");
-            System.out.println("3.  Eliminar SALA");
+	}
 
-            System.out.println("4.  Crear SESSIO");
-            System.out.println("5.  Modificar SESSIO");
-            System.out.println("6.  Eliminar SESSIO");
+	//*********************************************************
+	//Associa una SESSIO a una PELICULA
+	public static void associaPeliculaSessio(Pelicules pelicules, Sessions sessions) {
+		Scanner s = new Scanner(System.in);
+		Sessio se = null;
+		Pelicula p = null;
+		int numSessionsLliures;
+		if (Pelicules.quantitatPelicules() == 0) { //Si NO hi ha PELICULES, s'ix
+			System.out.println("\t No hi ha PELICULES per ASSOCIAR");
+			return;
+		}
 
-            System.out.println("7.  Crear PELICULA");
-            System.out.println("8.  Modificar PELICULA");
-            System.out.println("9.  Eliminar PELICULA");
+		if (Sessions.quantitatSessions() == 0) {//Si NO hi ha SESSIONS, s'ix
+			System.out.println("\t No hi ha SESSIONS per ASSOCIAR");
+			return;
+		}
 
-            System.out.println("10. Associar PELICULA a SESSIO");
-            System.out.println("11. Comprar ENTRADA");
-            System.out.println("0. Eixir Aplicació CINE");
+		//Llista actual de PELICULES
+		System.out.println("\n\tLlista actual de PELICULES\n\t--------------------------");
+		Pelicules.llistarPelicules();
 
-            String stropcio = s.next();
-            opcio = Integer.parseInt(stropcio);
-        } while (opcio < 0 || opcio > 11);
+		int numPelicula = Validacio.validaSencer("\n\tTria una PELICULA: ", Pelicules.quantitatPelicules());
+		p = Pelicules.retornaPelicula(numPelicula);
 
-        return opcio;
-    }
+		//Llista actual de les SESSIONS de la PELICULA
+		System.out.println("\n\tLlistat actual de SESSIONS per la PELICULA " + p.getNomPeli()+"\n\t---------------------------------------");
+		p.llistarSessionsPeli();
 
+		//Llistat de TOTES les Sessions assignables a la PELICULA
+		System.out.println("Llistat assignable de SESSIONS\n\t--------------------------");
+		numSessionsLliures = Sessions.llistarSessionsLliures();
+
+		if (numSessionsLliures == 0) { //Si NO hi ha SESSIONS, s'ix
+			System.out.println("\t No hi ha SESSIONS LLIURES per ASSOCIAR");
+			return;
+		}
+
+		int numSessio = Validacio.validaSencer("\n\tTria una SESSIO del llistat de les disponibles: ", Sessions.quantitatSessions());
+
+		se = Sessions.retornaSessio(numSessio);
+
+		if (p.getSessionsPeli().contains(se)){	//Si conté la PELICULA a la SESSIO
+			System.out.println("PELICULA ja associada a la SESSIO escollida");
+
+		} else{ //Si no estava a la llista, s'afegeix
+			p.getSessionsPeli().add(se);
+			se.setAssignadaPeli(true);
+		}//end else
+	}
+
+
+	//*********************************************************
+	//PAGAMENT D'UNA ENTRADA
+	static boolean pagamentEntrada(BigDecimal preu){
+		System.out.println("Import a pagar: "+preu);
+		System.out.println("\nPagant...(2seg)");
+		//pagant
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return Validacio.validaBoolea("Pagat? (S/N)");
+
+	}
+
+
+	//*********************************************************
+	//VISUALITZA EL MENU PRINCIPAL
+	public static int menu(){
+		int opcio;
+		Scanner s = new Scanner(System.in);
+
+		do{
+			System.out.println("MENU Aplicació CINE:");
+			System.out.println("====================");
+			System.out.println("1.  Crear SALA");
+			System.out.println("2.  Modificar SALA");
+			System.out.println("3.  Eliminar SALA");
+
+			System.out.println("4.  Crear SESSIO");
+			System.out.println("5.  Modificar SESSIO");
+			System.out.println("6.  Eliminar SESSIO");
+
+			System.out.println("7.  Crear PELICULA");
+			System.out.println("8.  Modificar PELICULA");
+			System.out.println("9.  Eliminar PELICULA");
+
+			System.out.println("10. Associar PELICULA a SESSIO");
+			System.out.println("11. Comprar ENTRADA");
+			System.out.println("0. Eixir Aplicació CINE");
+
+			System.out.println("\n\nIntrodueix opció de menu:");
+			String stropcio = s.next();
+			opcio=Integer.parseInt(stropcio);
+		}while (opcio < 0 || opcio > 11);
+
+		return opcio;
+	}
+
+	public static void carregaDadesInicials() {
+		System.out.println("Càrrega INICIAL de DADES...");
+		Sala sa1, sa2, sa3;
+		Sales.afegirSala( sa1 = new Sala(1, true, 5, 5));
+		Sales.afegirSala( sa2 = new Sala(2, true, 7, 7));
+		Sales.afegirSala( sa3 = new Sala(3, false, 9, 9));
+
+		Sessio s1, s2, s3;
+		Sessions.afegirSessio(s1 = new Sessio("sesA-sala1", 15,12,2018,21,30, sa1, new BigDecimal(6)));
+		Sessions.afegirSessio(s2 = new Sessio("sesB-sala2", 14,12,2018,22,0, sa2, new BigDecimal(4.5)));
+		Sessions.afegirSessio(s3 = new Sessio("sesC-sala3", 16,12,2018,18,45, sa3, new BigDecimal(8)));
+
+		Pelicula p1, p2, p3;
+		Pelicules.afegirPelicula(p1 = new Pelicula("Avatar", "USA", 195,	"James Cameron", "actor1, actriu1, ...", "bla, bla, bla ...", "Ficció",	"TP",new ArrayList<Sessio>()));
+		p1.setSessioPeli(s1);
+		Pelicules.afegirPelicula(p2 = new Pelicula("Gladiator", "USA", 160,	"Ridley Scott", "actor1, actriu1, ...", "bla, bla, bla ...", "Ficció",	">18",new ArrayList<Sessio>()));
+		p2.setSessioPeli(s2);
+		Pelicules.afegirPelicula(p3 = new Pelicula("Regreso al futuro", "USA", 195,	"Robert Zemeckis", "actor1, actriu1, ...", "bla, bla, bla ...", "Ficció",	"TP",new ArrayList<Sessio>()));
+		p3.setSessioPeli(s3);
+
+	}
 }
