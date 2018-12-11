@@ -15,125 +15,87 @@ import java.util.ArrayList;
 public class ThreadCusstom extends Thread {
 	
 	
-	static Pelicula pelicula=null;
+	private Pelicula pelicula=null;
+	private Sessio sesion=null;
+	private int numeroEntradas;
 	
-    public ThreadCusstom() {
-    
+    public ThreadCusstom(Pelicula pel,Sessio ses,int num) {
+    	this.pelicula=pel;
+    	this.sesion=ses;
+    	this.numeroEntradas=num;
     }
 
     @Override
     public void run() {
         System.out.println("Hilo Comprando ENTRADA...");
-			this.comprarEntradaPelicula();
-		
+			try {
+				this.comprarEntradaPelicula();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         System.out.println("\n\n");
     }
     
-    public void comprarEntradaPelicula() {
-    	Pelicula p = null;
-        Sala sa = null;
-        Sessio se = null;
-        //		String nsala, nsessio, npelicula, nfila, nseient;
-        //		int sala, 
-        int sessio, pelicula, fila, seient, numEntrades;
-
-        //Si NO hi ha PELICULES, s'ix del procés de compra
-        if (Pelicules.llistarPelicules() == 0) {
-            System.out.println("\t ERROR Cine:compraEntradaPelicula: No hi ha PELICULES");
-            return;
-        }
-        //Selecció de PELICULA
-        pelicula = Validacio.validaSencer("\t Tria PELICULA:", Pelicules.quantitatPelicules());
-        p = Pelicules.retornaPelicula(pelicula);
-        System.out.println(p);
+    public void comprarEntradaPelicula() throws InterruptedException {
+    	Sala sa=null;
+        System.out.println("Pelicula elegida "+pelicula);
         System.out.println();
         System.out.println();
-
-        //Si NO hi ha SESSIONS per la PELICULA, s'ix del procés de compra
-        if (p.llistarSessionsPeli() == 0) {
-            System.out.println("\t ERROR Cine:compraEntradaPelicula: No hi ha SESSIONS per a esta PELICULA");
-            return;
-        }
+        Thread.sleep(1000);
         //Selecció de la SESSIO
-        sessio = Validacio.validaSencer("\t Tria la sessió per a " + p.getNomPeli() + ":", p.getSessionsPeli().size());
-
-        se = p.retornaSessioPeli(sessio);
-        sa = se.getSala();
-        se.mapaSessio();
-        Seient[][] seients = se.getSeients();
+        System.out.println("Sesion elegida" + sesion);
+        Thread.sleep(1000);
+        sa = sesion.getSala();
+        sesion.mapaSessio();
+        Thread.sleep(1000);
+        Seient[][] seients = sesion.getSeients();
         ArrayList<Seient>listaAsientosTemporal=new ArrayList<>();
         
-        int numeroAsientos = Validacio.validaSencer("Introduzca numero de entradas", (seients.length * seients[0].length));
+     
         int i = 0;
-        while (i < numeroAsientos) {
-            fila = Validacio.validaSencer("\tTria FILA: [1-" + sa.getFiles() + "] ", sa.getFiles());
-            seient = Validacio.validaSencer("\t Tria SEIENT en la fila: [1-" + sa.getTamanyFila() + "]", sa.getTamanyFila());
-
+        while (i < numeroEntradas) {
+       
+        	int fila=(int)(Math.random() * ((sa.getFiles() - 1) + 1)) + 1;
+            int seient=(int)(Math.random() * ((sa.getTamanyFila() - 1) + 1)) + 1;
+            
             if (seients[fila - 1][seient - 1].verificaSeient()) { //Si SEIENT lliure -> reserva SEIENT
-                //pagament entrada
-                //pagamentEntrada(se.getPreu());
-                //seients[fila - 1][seient - 1].ocupaSeient();
             	seients[fila - 1][seient - 1].reservantSeient();
             	listaAsientosTemporal.add(seients[fila-1][seient-1]);
                 System.out.println("Seient reservat" + listaAsientosTemporal.get(listaAsientosTemporal.size()-1).toString());
+                Thread.sleep(1000);
                 //se.imprimirTicket(seients[fila - 1][seient - 1], se, sa, p);
             } else { //NO Reserva
                 System.out.println("\t ERROR Cine:compraEntradaPelicula: No sha pogut fer reserva Seient");
+                aliberar_a_los_perros(listaAsientosTemporal,seients);
+                return;
             };
-            se.mapaSessio();
+            Thread.sleep(1000);
+            sesion.mapaSessio();
             i++;
         }
-        pagamentEntrada(new BigDecimal(listaAsientosTemporal.size()).multiply(se.getPreu()));
-        for(int j=0;j<listaAsientosTemporal.size();j++) { // Una vez pagada la entrada, se disponen a ocupar los asientos en si y a imprimir los tickets
-        	seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()].ocupaSeient();
-        	se.imprimirTicket(seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()], se, sa, p);
+        if(pagamentEntrada(new BigDecimal(listaAsientosTemporal.size()).multiply(sesion.getPreu()))) {
+	        for(int j=0;j<listaAsientosTemporal.size();j++) { // Una vez pagada la entrada, se disponen a ocupar los asientos en si y a imprimir los tickets
+	        	seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()].ocupaSeient();
+	        	sesion.imprimirTicket(seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()], sesion, sa, pelicula);
+	        }
+	       
+        }else {
+        	aliberar_a_los_perros(listaAsientosTemporal,seients);
         }
+    }
+    
+    public static void aliberar_a_los_perros(ArrayList<Seient>listaAsientosOcupados,Seient[][]seients) {
+    	for(int i=0;i<listaAsientosOcupados.size();i++) {
+    		seients[listaAsientosOcupados.get(i).getFilaSeient()][listaAsientosOcupados.get(i).getNumeroSeient()].alliberaSeient();
+    	}
+    	System.out.print("Aliberados con exito " + listaAsientosOcupados.size()+ " asientos");
     	
     }
-    public  void reserva_numEntrades(Pelicula p, Sessio se, Sala sa, int numEntrades) throws InterruptedException {
-        boolean isReservat = true;
-        int fila, seient;
-        //ArrayList de la quantitat de seients que es volen comprar
-        ArrayList<Seient> seientsAcomprar = new ArrayList<Seient>();
-
-        for (int i = 0; i < numEntrades; i++) {
-            System.out.println("\tSeient " + (i + 1) + " :");
-            fila = Validacio.validaSencer("\t\t Tria FILA: [1-" + sa.getFiles() + "] ", sa.getFiles());
-            seient = Validacio.validaSencer("\t\t Tria SEIENT en la fila: [1-" + sa.getTamanyFila() + "]", sa.getTamanyFila());
-            Seient[][] seients = se.getSeients();
-            if (seients[fila - 1][seient - 1].verificaSeient()) { //Reserva SEIENT
-                seients[fila - 1][seient - 1].reservantSeient();
-                seientsAcomprar.add(seients[fila - 1][seient - 1]);//afegeix seient a llista SEIENTS RESERVATS
-            } else { //NO Reserva
-                System.out.println("\t ERROR Cine:validaSeient: Seient reservat/ocupat");
-                isReservat = false;
-            };
-        }//endfor
-
-        if (isReservat) { //Compra seients
-            System.out.println("\nSEIENT RESERVATS: " + seientsAcomprar.size());
-            pagamentEntrada(new BigDecimal(numEntrades).multiply(se.getPreu()));
-            for (int i = 0; i < seientsAcomprar.size(); i++) {
-                Seient s = seientsAcomprar.get(i);
-                s.ocupaSeient(); 		//ocupa seient
-                se.imprimirTicket(s, se, sa, p);
-                System.out.println();
-            }//for
-        } else {// Llibera seients
-            System.out.println("\t\tNO sha pogut fer la compra de " + numEntrades + " entrades. Es queden Lliures");
-            for (int i = 0; i < seientsAcomprar.size(); i++) {
-                Seient s = seientsAcomprar.get(i);
-                s.alliberaSeient(); 		//ocupa seient
-            }//for
-        }
-        for (int i = seientsAcomprar.size(); i > 0; i--) {
-            seientsAcomprar.remove(i - 1); //elimina seient de la llista
-        }
-    }
-
-    //*********************************************************
+    
+  //*********************************************************
     //PAGAMENT D'UNA ENTRADA
-     boolean pagamentEntrada(BigDecimal preu) {
+    static boolean pagamentEntrada(BigDecimal preu) {
         System.out.println("Import a pagar: " + preu);
         System.out.println("\nPagant...(2seg)");
         //pagant
@@ -144,8 +106,7 @@ public class ThreadCusstom extends Thread {
             e.printStackTrace();
         }
 
-        return Validacio.validaBoolea("Pagat? (S/N)");
+        return true;
 
     }
-
 }

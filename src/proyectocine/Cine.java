@@ -146,14 +146,9 @@ public class Cine {
 
                 case 11: //Comprar ENTRADA
                     System.out.println("Hilo Comprando ENTRADA...");
-                    int ale1=(int) (Math.round(Math.random()*(Pelicules.quantitatPelicules()-1)));
-                    ale1++;
-                    Pelicula peliThread=Pelicules.retornaPelicula(ale1);
-                    System.out.println(peliThread.toString());
-                    
-                    int ale2=(int)(Math.round(Math.random()*peliThread.getSessionsPeli().size()-1));
-                    ale2++;
-                  
+                    ThreadCusstom thread=new ThreadCusstom(Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),4);
+                    thread.start();
+                    thread.join();
                     
                     System.out.println("\n\n");
 
