@@ -26,8 +26,8 @@ public class Seient {
 	//metode ToString
 	@Override
 	public String toString() {
-		return "Seient [filaSeient=" + filaSeient + ", numeroSeient="
-				+ numeroSeient + ", disponibilitat=" + disponibilitat + "]";
+		return "Seient [filaSeient=" + (filaSeient+1) + ", numeroSeient="
+				+ (numeroSeient+1) + ", disponibilitat=" + disponibilitat + "]";
 	}
 
 
