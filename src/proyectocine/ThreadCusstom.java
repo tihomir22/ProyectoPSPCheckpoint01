@@ -18,8 +18,10 @@ public class ThreadCusstom extends Thread {
 	private Pelicula pelicula=null;
 	private Sessio sesion=null;
 	private int numeroEntradas;
+	private String nombreHilo;
 	
-    public ThreadCusstom(Pelicula pel,Sessio ses,int num) {
+    public ThreadCusstom(String nombre,Pelicula pel,Sessio ses,int num) {
+    	this.setName(nombre);
     	this.pelicula=pel;
     	this.sesion=ses;
     	this.numeroEntradas=num;
@@ -39,12 +41,12 @@ public class ThreadCusstom extends Thread {
     
     public void comprarEntradaPelicula() throws InterruptedException {
     	Sala sa=null;
-        System.out.println("Pelicula elegida "+pelicula);
+        System.out.println(this.getName()+" Pelicula elegida "+pelicula);
         System.out.println();
         System.out.println();
         Thread.sleep(1000);
         //Selecció de la SESSIO
-        System.out.println("Sesion elegida" + sesion);
+        System.out.println(this.getName()+" Sesion elegida" + sesion);
         Thread.sleep(1000);
         sa = sesion.getSala();
         sesion.mapaSessio();
@@ -59,14 +61,16 @@ public class ThreadCusstom extends Thread {
         	int fila=(int)(Math.random() * ((sa.getFiles() - 1) + 1)) + 1;
             int seient=(int)(Math.random() * ((sa.getTamanyFila() - 1) + 1)) + 1;
             
+            System.out.println(this.getName()+" Va a intentar reservar asiento fila: " +fila+" seient "+seient);
+            
             if (seients[fila - 1][seient - 1].verificaSeient()) { //Si SEIENT lliure -> reserva SEIENT
             	seients[fila - 1][seient - 1].reservantSeient();
             	listaAsientosTemporal.add(seients[fila-1][seient-1]);
-                System.out.println("Seient reservat" + listaAsientosTemporal.get(listaAsientosTemporal.size()-1).toString());
+                System.out.println(this.getName()+" Seient reservat" + listaAsientosTemporal.get(listaAsientosTemporal.size()-1).toString());
                 Thread.sleep(1000);
                 //se.imprimirTicket(seients[fila - 1][seient - 1], se, sa, p);
             } else { //NO Reserva
-                System.out.println("\t ERROR Cine:compraEntradaPelicula: No sha pogut fer reserva Seient");
+                System.out.println(this.getName()+ " \t ERROR Cine:compraEntradaPelicula: No sha pogut fer reserva Seient fila" +fila+" seient "+seient);
                 aliberar_a_los_perros(listaAsientosTemporal,seients);
                 return;
             };
@@ -85,19 +89,19 @@ public class ThreadCusstom extends Thread {
         }
     }
     
-    public static void aliberar_a_los_perros(ArrayList<Seient>listaAsientosOcupados,Seient[][]seients) {
+    public  void aliberar_a_los_perros(ArrayList<Seient>listaAsientosOcupados,Seient[][]seients) {
     	for(int i=0;i<listaAsientosOcupados.size();i++) {
     		seients[listaAsientosOcupados.get(i).getFilaSeient()][listaAsientosOcupados.get(i).getNumeroSeient()].alliberaSeient();
     	}
-    	System.out.print("Aliberados con exito " + listaAsientosOcupados.size()+ " asientos");
+    	System.out.print(this.getName()+" Aliberados con exito " + listaAsientosOcupados.size()+ " asientos");
     	
     }
     
   //*********************************************************
     //PAGAMENT D'UNA ENTRADA
-    static boolean pagamentEntrada(BigDecimal preu) {
-        System.out.println("Import a pagar: " + preu);
-        System.out.println("\nPagant...(2seg)");
+     boolean pagamentEntrada(BigDecimal preu) {
+        System.out.println(this.getName()+" Import a pagar: " + preu);
+        System.out.println(this.getName()+" \nPagant...(2seg)");
         //pagant
         try {
             Thread.sleep(2000);

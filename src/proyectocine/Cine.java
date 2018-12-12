@@ -146,9 +146,17 @@ public class Cine {
 
                 case 11: //Comprar ENTRADA
                     System.out.println("Hilo Comprando ENTRADA...");
-                    ThreadCusstom thread=new ThreadCusstom(Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),4);
+                    ThreadCusstom thread=new ThreadCusstom("Hilo1",Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),4);
+                    ThreadCusstom thread2=new ThreadCusstom("Hilo2",Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),2);
+                    ThreadCusstom thread3=new ThreadCusstom("Hilo3",Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),2);
                     thread.start();
+                    thread2.start();
+                    thread3.start();
+                    
                     thread.join();
+                    thread2.join();
+                    thread3.join();
+                  
                     
                     System.out.println("\n\n");
 

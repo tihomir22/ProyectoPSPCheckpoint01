@@ -33,7 +33,7 @@ public class Seient {
 
 	//*********************************************************
 	//Verifica si el SEIENT es LLIURE
-	public boolean verificaSeient(){
+	public synchronized boolean verificaSeient(){
 
 		switch(this.getDisponibilitat()){
 
@@ -75,13 +75,13 @@ public class Seient {
 
 	//*********************************************************
 	//Modifica L'ESTAT del SEIENT a RESERVANT
-	public  void reservantSeient() {
+	public  synchronized void reservantSeient() {
 		this.disponibilitat = Estat.RESERVANT;
 	}
 
 	//*********************************************************
 	//Modifica L'ESTAT del SEIENT a OCUPAT
-	public  void ocupaSeient() {
+	public  synchronized void ocupaSeient() {
 		this.disponibilitat = Estat.OCUPAT;
 	}
 	
