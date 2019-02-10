@@ -103,6 +103,10 @@ public class Pelicules {
 	public  void setPelicules(ArrayList<Pelicula> pelicules) {
 		this.pelicules = pelicules;
 	}
+        
+                public static ArrayList<Pelicula> recuperarPeliculasArray(){
+                    return pelicules;
+                }
 
 
 }

@@ -3,6 +3,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
+import proyectocine.Servidor;
 
 public class Cine {
 
@@ -145,7 +146,7 @@ public class Cine {
                     break;
 
                 case 11: //Comprar ENTRADA
-                    System.out.println("Hilo Comprando ENTRADA...");
+                    /*System.out.println("Hilo Comprando ENTRADA...");
                     ThreadCusstom thread=new ThreadCusstom("Hilo1",Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),4);
                     ThreadCusstom thread2=new ThreadCusstom("Hilo2",Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),2);
                     ThreadCusstom thread3=new ThreadCusstom("Hilo3",Pelicules.retornaPelicula(1),Sessions.retornaSessio(1),2);
@@ -155,7 +156,10 @@ public class Cine {
                     
                     thread.join();
                     thread2.join();
-                    thread3.join();
+                    thread3.join();*/
+                    
+                    Servidor server=new Servidor();
+                    server.start();
                   
                     
                     System.out.println("\n\n");
