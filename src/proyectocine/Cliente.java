@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cliente;
+package proyectocine;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author sportak
  */
 public class Cliente {
-
+    
     final static String HOST = "localhost";
     static Scanner teclado = new Scanner(System.in);
     static String mensaje = " ";

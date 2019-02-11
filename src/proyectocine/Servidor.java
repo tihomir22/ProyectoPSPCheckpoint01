@@ -5,7 +5,6 @@
  */
 package proyectocine;
 
-import proyectocine.FilServidorCompraEntrades;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,10 +13,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author sportak
- */
+
 public class Servidor extends Thread {
 
     ServerSocket socket_s = null;
@@ -26,6 +22,13 @@ public class Servidor extends Thread {
     DataOutputStream output;
     String mensaje = "";
     final int puertoServidor = 5000;
+    
+
+    public Servidor() {
+    }
+
+    public Servidor(Pelicules pelicules) {
+    }
 
     @Override
     public void run() {
@@ -35,7 +38,7 @@ public class Servidor extends Thread {
             while (true) {
                 sc = socket_s.accept();
                 System.out.println("[SERVIDOR] Se ha recibido petición del cliente , se lanza FilServidorCompraEntrades");
-                FilServidorCompraEntrades fil = new FilServidorCompraEntrades(sc, "HILO"+Math.round(Math.random())*100);
+                FilServidorCompraEntrades fil = new FilServidorCompraEntrades(sc, "HILO" + Math.round(Math.random()) * 100);
                 fil.start();
             }
         } catch (IOException ex) {

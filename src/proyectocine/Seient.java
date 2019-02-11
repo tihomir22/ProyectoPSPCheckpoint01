@@ -1,4 +1,4 @@
-
+package proyectocine;
 public class Seient {
 
 	private int filaSeient;

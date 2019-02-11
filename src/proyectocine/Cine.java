@@ -1,3 +1,5 @@
+package proyectocine;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -160,7 +162,6 @@ public class Cine {
                     
                     Servidor server=new Servidor();
                     server.start();
-                  
                     
                     System.out.println("\n\n");
 

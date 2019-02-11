@@ -1,3 +1,4 @@
+package proyectocine;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Scanner;
