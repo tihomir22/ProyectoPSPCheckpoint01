@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import proyectocine.Seient.Estat;
 
 /**
  *
@@ -27,7 +28,11 @@ public class FilServidorCompraEntrades extends Thread {
     String mensaje = "", respuesta;
     Pelicula peli;
     Sessio ses;
+    Seient sei;
+    Seient[][] asientosSesion;
+    ArrayList<Seient> listaAsientos = new ArrayList<>();
     int numEntradas;
+    int contEntradasProcesadas = 0;
     int opcion = 0;
 
     public FilServidorCompraEntrades(Socket sc, String nombre) {
@@ -61,6 +66,8 @@ public class FilServidorCompraEntrades extends Thread {
             input.close();
         } catch (IOException ex) {
             Logger.getLogger(FilServidorCompraEntrades.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(FilServidorCompraEntrades.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -72,21 +79,18 @@ public class FilServidorCompraEntrades extends Thread {
                 return respuesta + "\nElija una sesion" + Sessions.respuestaSessionsTCP();
             case 2:
                 return respuesta + "\nIntroduzca numero de entradas";
-            case 3: {
-                try {
-                    this.comprarEntradaPelicula();
-                    return this.ses.mapaSessionTCP() + "\n";
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(FilServidorCompraEntrades.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            return "Iniciando compra de entradas ...";
+            case 3:
+                return respuesta + "\n" + this.ses.mapaSessionTCP() + "\n Introduzca fila de asiento y numero de asiento separados por espacio";
+            case 4:
+                return respuesta + "\n Es correcto el asiento? S/N";
+            case 5:
+                return this.ses.mapaSessionTCP() + "\n" + respuesta;
 
         }
         return "Error de solicitud";
     }
 
-    public String procesarRespuesta(String mensaje) {
+    public String procesarRespuesta(String mensaje) throws InterruptedException {
         boolean isNumeric;
         switch (opcion) {
             case 0:
@@ -112,6 +116,7 @@ public class FilServidorCompraEntrades extends Thread {
                     if (index < Sessions.quantitatSessions()) {
                         opcion = 2;
                         this.ses = Sessions.retornaSessio(index + 1);
+                        asientosSesion = this.ses.getSeients();
                         return Sessions.retornaSessio(index + 1).toString();
                     }
 
@@ -129,8 +134,52 @@ public class FilServidorCompraEntrades extends Thread {
                 } else {
                     return "Has introducido un dato incorrecto!";
                 }
+            case 3:
+                System.out.println("He recibido del cliente " + mensaje);
+                String[] respuesta = mensaje.split(" ");
+                if (respuesta.length >= 2) {
+                    if (respuesta[0].trim().chars().allMatch(Character::isDigit) && respuesta[1].trim().chars().allMatch(Character::isDigit)) {
+                        int filas = Integer.parseInt(respuesta[0]);
+                        int col = Integer.parseInt(respuesta[1]);
+                        sei = new Seient(filas, col);
+                        opcion = 4;
+                        return sei.toString();
+                    } else {
+                        return "Has introducido mal los datos, un ejemplo correcto es : [ 2 4 ]";
+                    }
+                } else {
+                    return "Has introducido mal los datos, un ejemplo correcto es : [ 2 4 ]";
+                }
+            case 4:
+                System.out.println("He recibido del cliente " + mensaje);
+                if (mensaje.equalsIgnoreCase("S")) {
+                    if (this.asientosSesion[sei.getFilaSeient() - 1][sei.getNumeroSeient() - 1].verificaSeient()) {
+                        this.asientosSesion[sei.getFilaSeient() - 1][sei.getNumeroSeient() - 1].reservantSeient();
+                        this.listaAsientos.add(this.sei);
+                        this.ses.setSeients(this.asientosSesion);
+                        this.contEntradasProcesadas++;
+                        if (this.numEntradas == this.contEntradasProcesadas) {
+                            this.opcion = 5;
+                            return "Todas las entradas fijadas , ahora procedemos a realizar el pago";
+                        } else {
+                            this.opcion = 3;
+                            return "Reserva realizado con exito del asiento " + this.asientosSesion[sei.getFilaSeient() - 1][sei.getNumeroSeient() - 1].toString();
+                        }
+                    } else {
+                        this.opcion = 3;
+                        return "Esa butaca ya esta reserva / ocupada";
+                    }
+
+                } else {
+                    this.opcion = 3;
+                    return "Vuelve a introducir la entrada";
+                }
+            case 5:
+                comprarEntradaPelicula();
+                break;
+
         }
-        return "Error de respuesta";
+        return "** Respuesta por defecto **";
     }
 
     public void comprarEntradaPelicula() throws InterruptedException {
@@ -151,12 +200,17 @@ public class FilServidorCompraEntrades extends Thread {
         int i = 0;
         while (i < this.numEntradas) {
 
-            int fila = (int) (Math.random() * ((sa.getFiles() - 1) + 1)) + 1;
-            int seient = (int) (Math.random() * ((sa.getTamanyFila() - 1) + 1)) + 1;
+            int fila = this.listaAsientos.get(i).getFilaSeient();
+
+            int seient = this.listaAsientos.get(i).getNumeroSeient();
 
             System.out.println(this.getName() + " Va a intentar reservar asiento fila: " + fila + " seient " + seient);
 
-            if (seients[fila - 1][seient - 1].verificaSeient()) { //Si SEIENT lliure -> reserva SEIENT
+            if (seients[fila - 1][seient - 1].getDisponibilitat() == Estat.RESERVANT) {
+                seients[fila - 1][seient - 1].alliberaSeient();
+            }
+
+            if (seients[fila - 1][seient - 1].verificaSeient()) { //Si SEIENT lliure -> reserva SEIENT y si esta reservando tambien se puede ocupar
                 seients[fila - 1][seient - 1].reservantSeient();
                 listaAsientosTemporal.add(seients[fila - 1][seient - 1]);
                 System.out.println(this.getName() + " Seient reservat" + listaAsientosTemporal.get(listaAsientosTemporal.size() - 1).toString());
@@ -171,6 +225,7 @@ public class FilServidorCompraEntrades extends Thread {
             this.ses.mapaSessio();
             i++;
         }
+
         if (pagamentEntrada(new BigDecimal(listaAsientosTemporal.size()).multiply(this.ses.getPreu()))) {
             for (int j = 0; j < listaAsientosTemporal.size(); j++) { // Una vez pagada la entrada, se disponen a ocupar los asientos en si y a imprimir los tickets
                 seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()].ocupaSeient();
