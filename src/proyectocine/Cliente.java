@@ -18,8 +18,9 @@ import java.util.logging.Logger;
  * @author sportak
  */
 public class Cliente {
-    
+
     final static String HOST = "localhost";
+    
     static Scanner teclado = new Scanner(System.in);
     static String mensaje = " ";
     //Puerto del servidor
@@ -42,7 +43,7 @@ public class Cliente {
                 mensajeEnviado = teclado.nextLine();
                 System.out.println("[CLIENTE] Voy a enviar " + mensajeEnviado);
                 out.writeUTF(mensajeEnviado);
-                
+
             }
 
             sc.close();

@@ -3,6 +3,7 @@ public class Seient {
 
 	private int filaSeient;
 	private int numeroSeient;
+        private int idCliente;
 	private Estat disponibilitat;
 
 	public enum Estat {LLIURE, OCUPAT, RESERVANT}
@@ -29,6 +30,15 @@ public class Seient {
 		return "Seient [filaSeient=" + (filaSeient+1) + ", numeroSeient="
 				+ (numeroSeient+1) + ", disponibilitat=" + disponibilitat + "]";
 	}
+
+    public int getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
+    }
+        
 
 
 	//*********************************************************

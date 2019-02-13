@@ -26,6 +26,7 @@ public class FilServidorCompraEntrades extends Thread {
     DataInputStream input;
     DataOutputStream output;
     String mensaje = "", respuesta;
+    static int idCliente = (int) Math.round(Math.random() * 1000);
     Pelicula peli;
     Sessio ses;
     Seient sei;
@@ -134,6 +135,7 @@ public class FilServidorCompraEntrades extends Thread {
                 } else {
                     return "Has introducido un dato incorrecto!";
                 }
+
             case 3:
                 System.out.println("He recibido del cliente " + mensaje);
                 String[] respuesta = mensaje.split(" ");
@@ -150,23 +152,29 @@ public class FilServidorCompraEntrades extends Thread {
                 } else {
                     return "Has introducido mal los datos, un ejemplo correcto es : [ 2 4 ]";
                 }
+
             case 4:
                 System.out.println("He recibido del cliente " + mensaje);
                 if (mensaje.equalsIgnoreCase("S")) {
                     if (this.asientosSesion[sei.getFilaSeient() - 1][sei.getNumeroSeient() - 1].verificaSeient()) {
                         this.asientosSesion[sei.getFilaSeient() - 1][sei.getNumeroSeient() - 1].reservantSeient();
+                        this.sei.setIdCliente(idCliente);
                         this.listaAsientos.add(this.sei);
                         this.ses.setSeients(this.asientosSesion);
-                        this.contEntradasProcesadas++;
-                        if (this.numEntradas == this.contEntradasProcesadas) {
+
+                        if (this.numEntradas - 1 == this.contEntradasProcesadas) {
                             this.opcion = 5;
+                            //this.contEntradasProcesadas++;
                             return "Todas las entradas fijadas , ahora procedemos a realizar el pago";
                         } else {
                             this.opcion = 3;
+                            this.contEntradasProcesadas++;
                             return "Reserva realizado con exito del asiento " + this.asientosSesion[sei.getFilaSeient() - 1][sei.getNumeroSeient() - 1].toString();
                         }
                     } else {
+                        this.contEntradasProcesadas = 0;
                         this.opcion = 3;
+                        this.aliberar_a_los_perros(listaAsientos, this.ses.getSeients());
                         return "Esa butaca ya esta reserva / ocupada";
                     }
 
@@ -205,8 +213,8 @@ public class FilServidorCompraEntrades extends Thread {
             int seient = this.listaAsientos.get(i).getNumeroSeient();
 
             System.out.println(this.getName() + " Va a intentar reservar asiento fila: " + fila + " seient " + seient);
-
-            if (seients[fila - 1][seient - 1].getDisponibilitat() == Estat.RESERVANT) {
+            //Esto se hace porque el cliente estará reservando entradas y mientras lo hace y aun no ha pagado se quedaran en estado de reserva para posteriormente ser pagadas
+            if (seients[fila - 1][seient - 1].getDisponibilitat() == Estat.RESERVANT && this.listaAsientos.get(i).getIdCliente() == idCliente) {
                 seients[fila - 1][seient - 1].alliberaSeient();
             }
 
@@ -215,7 +223,7 @@ public class FilServidorCompraEntrades extends Thread {
                 listaAsientosTemporal.add(seients[fila - 1][seient - 1]);
                 System.out.println(this.getName() + " Seient reservat" + listaAsientosTemporal.get(listaAsientosTemporal.size() - 1).toString());
                 Thread.sleep(1000);
-                //se.imprimirTicket(seients[fila - 1][seient - 1], se, sa, p);
+
             } else { //NO Reserva
                 System.out.println(this.getName() + " \t ERROR Cine:compraEntradaPelicula: No sha pogut fer reserva Seient fila" + fila + " seient " + seient);
                 aliberar_a_los_perros(listaAsientosTemporal, seients);
@@ -239,11 +247,16 @@ public class FilServidorCompraEntrades extends Thread {
     }
 
     public void aliberar_a_los_perros(ArrayList<Seient> listaAsientosOcupados, Seient[][] seients) {
-        for (int i = 0; i < listaAsientosOcupados.size(); i++) {
-            seients[listaAsientosOcupados.get(i).getFilaSeient()][listaAsientosOcupados.get(i).getNumeroSeient()].alliberaSeient();
-        }
-        System.out.print(this.getName() + " Aliberados con exito " + listaAsientosOcupados.size() + " asientos");
+        System.out.println(listaAsientosOcupados.size() + "\n");
+        System.out.println(seients.length + "\n");
 
+        for (int i = 0; i < listaAsientosOcupados.size(); i++) {
+            seients[listaAsientosOcupados.get(i).getFilaSeient() - 1][listaAsientosOcupados.get(i).getNumeroSeient() - 1].alliberaSeient();
+        }
+        listaAsientosOcupados.clear();
+        System.out.print(this.getName() + " Aliberados con exito " + listaAsientosOcupados.size() + " asientos \n");
+        System.out.println(listaAsientosOcupados.size() + "\n");
+        System.out.println(seients.length + "\n");
     }
 
     //PAGAMENT D'UNA ENTRADA
@@ -259,6 +272,22 @@ public class FilServidorCompraEntrades extends Thread {
         }
 
         return true;
+
+    }
+
+    //PAGAMENT ENTRADA TCP
+    public String pagamentEntradaTCP(BigDecimal preu) {
+        System.out.println(this.getName() + " Import a pagar: " + preu);
+        System.out.println(this.getName() + " \nPagant...(2seg)");
+        String res = " Import a pagar: " + preu + " \nPagant...(2seg)";
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(FilServidorCompraEntrades.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return res;
 
     }
 }
