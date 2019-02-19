@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import proyectocine.Seient.Estat;
@@ -32,6 +33,7 @@ public class FilServidorCompraEntrades extends Thread {
     Seient sei;
     Seient[][] asientosSesion;
     ArrayList<Seient> listaAsientos = new ArrayList<>();
+    ArrayList<String> listaTickets = new ArrayList<>();
     int numEntradas;
     int contEntradasProcesadas = 0;
     int opcion = 0;
@@ -85,7 +87,7 @@ public class FilServidorCompraEntrades extends Thread {
             case 4:
                 return respuesta + "\n Es correcto el asiento? S/N";
             case 5:
-                return this.ses.mapaSessionTCP() + "\n" + respuesta;
+                return this.ses.mapaSessionTCP() + "\n" + Arrays.toString(this.listaTickets.toArray()) + respuesta;
 
         }
         return "Error de solicitud";
@@ -165,7 +167,7 @@ public class FilServidorCompraEntrades extends Thread {
                         if (this.numEntradas - 1 == this.contEntradasProcesadas) {
                             this.opcion = 5;
                             //this.contEntradasProcesadas++;
-                            return "Todas las entradas fijadas , ahora procedemos a realizar el pago";
+                            return "Todas las entradas fijadas , ahora procedemos a realizar el pago presione ENTER para continuar";
                         } else {
                             this.opcion = 3;
                             this.contEntradasProcesadas++;
@@ -238,6 +240,7 @@ public class FilServidorCompraEntrades extends Thread {
             for (int j = 0; j < listaAsientosTemporal.size(); j++) { // Una vez pagada la entrada, se disponen a ocupar los asientos en si y a imprimir los tickets
                 seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()].ocupaSeient();
                 this.ses.imprimirTicket(seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()], this.ses, sa, this.peli);
+                this.listaTickets.add(this.ses.imprimirTicketTCP(seients[listaAsientosTemporal.get(j).getFilaSeient()][listaAsientosTemporal.get(j).getNumeroSeient()], this.ses, sa, this.peli));
             }
 
         } else {

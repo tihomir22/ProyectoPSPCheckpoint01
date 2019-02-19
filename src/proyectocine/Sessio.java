@@ -248,7 +248,7 @@ public class Sessio {
     public String imprimirTicketTCP(Seient s, Sessio se, Sala sa, Pelicula p) {
         String res = "";
         //System.out.println("Imprimint el seu Ticket...");
-        res = res + "Imprimint el seu Ticket... \n";
+        res = res + "\n Imprimint el seu Ticket... \n";
         //System.out.println("***************************");
         res = res + "*************************** \n";
         //System.out.println("* ***TICKET ENTRADA *******");
